@@ -1,18 +1,16 @@
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
 
-#include <stdbool.h>
-
 #include "pairing.h"
 
 int homekit_storage_reset();
 
 int homekit_storage_init();
 
-int homekit_storage_save_accessory_id(const char *accessory_id);
+void homekit_storage_save_accessory_id(const char *accessory_id);
 int homekit_storage_load_accessory_id(char *data);
 
-int homekit_storage_save_accessory_key(const ed25519_key *key);
+void homekit_storage_save_accessory_key(const ed25519_key *key);
 int homekit_storage_load_accessory_key(ed25519_key *key);
 
 bool homekit_storage_can_add_pairing();

@@ -33,22 +33,6 @@ ifdef component_compile_rules
 
     homekit_INC_DIR = $(homekit_ROOT)/include $(homekit_ROOT)/src
     homekit_SRC_DIR = $(homekit_ROOT)/src
-    homekit_SRC_FILES = \
-        ${homekit_ROOT}/src/accessories.c \
-        ${homekit_ROOT}/src/base64.c \
-        ${homekit_ROOT}/src/bitset.c \
-        ${homekit_ROOT}/src/crypto.c \
-        ${homekit_ROOT}/src/debug.c \
-        ${homekit_ROOT}/src/homekit_mdns.c \
-        ${homekit_ROOT}/src/homekit_mdns_debug.c \
-        ${homekit_ROOT}/src/json.c \
-        ${homekit_ROOT}/src/port.c \
-        ${homekit_ROOT}/src/port_mdns_custom.c \
-        ${homekit_ROOT}/src/port_storage_spiflash.c \
-        ${homekit_ROOT}/src/query_params.c \
-        ${homekit_ROOT}/src/server.c \
-        ${homekit_ROOT}/src/storage.c \
-        ${homekit_ROOT}/src/tlv.c
 
     $(eval $(call component_compile_rules,homekit))
 
@@ -107,11 +91,7 @@ else
 
     COMPONENT_PRIV_INCLUDEDIRS = src
     COMPONENT_SRCDIRS = src
-    COMPONENT_OBJEXCLUDE = \
-        src/homekit_mdns.o \
-        src/homekit_mdns_debug.o \
-        src/port_mdns_custom.o \
-        src/port_storage_partition.o
+    COMPONENT_OBJEXCLUDE = src/homekit_mdns.o src/homekit_mdns_debug.o
 
 erase_homekit_data:
 	$(ESPTOOLPY_SERIAL) erase_region $(CONFIG_HOMEKIT_SPI_FLASH_BASE_ADDR) 4096

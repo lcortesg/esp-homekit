@@ -1,39 +1,11 @@
-set(homekit_SRCS
-    "src/accessories.c"
-    "src/base64.c"
-    "src/bitset.c"
-    "src/crypto.c"
-    "src/debug.c"
-    "src/json.c"
-    "src/port.c"
-    "src/port_mdns_idf.c"
-    "src/query_params.c"
-    "src/server.c"
-    "src/storage.c"
-    "src/tlv.c"
-)
-set(homekit_REQUIRES wolfssl json http-parser mdns)
-
-set(homekit_COMPILE_OPTIONS
-    "-Wno-error=unused-variable"
-    "-DHOMEKIT_MAX_CLIENTS=${CONFIG_HOMEKIT_MAX_CLIENTS}"
-    "-DESP_IDF"
-)
-
-if (${IDF_VERSION_MAJOR} LESS 5)
-    list(APPEND homekit_SRCS "src/port_storage_spiflash.c")
-    list(APPEND homekit_REQUIRES spi_flash)
-    list(APPEND homekit_COMPILE_OPTIONS -DSPIFLASH_BASE_ADDR=${CONFIG_HOMEKIT_SPI_FLASH_BASE_ADDR})
-else()
-    list(APPEND homekit_SRCS "src/port_storage_partition.c")
-    list(APPEND homekit_REQUIRES esp_partition esp_hw_support esp_system)
-endif()
-
 idf_component_register(
-    SRCS ${homekit_SRCS}
+    SRC_DIRS src
+    EXCLUDE_SRCS
+        "src/homekit_mdns.c"
+        "src/homekit_mdns_debug.c"
     INCLUDE_DIRS "include"
     PRIV_INCLUDE_DIRS "src"
-    REQUIRES ${homekit_REQUIRES}
+    REQUIRES wolfssl json http-parser mdns spi_flash
 )
 
 list(APPEND EXTRA_WOLFSSL_COMPILE_OPTIONS
@@ -61,7 +33,13 @@ endif()
 
 idf_build_set_property(COMPILE_OPTIONS "${EXTRA_WOLFSSL_COMPILE_OPTIONS}" APPEND)
 
+target_compile_options(${COMPONENT_LIB} PRIVATE
+    -Wno-error=unused-variable
+    -DHOMEKIT_MAX_CLIENTS=${CONFIG_HOMEKIT_MAX_CLIENTS}
+    -DSPIFLASH_BASE_ADDR=${CONFIG_HOMEKIT_SPI_FLASH_BASE_ADDR}
+    -DESP_IDF
+)
+
 if(CONFIG_HOMEKIT_DEBUG)
-    list(APPEND homekit_COMPILE_OPTIONS PRIVATE -DHOMEKIT_DEBUG)
+    target_compile_options(${COMPONENT_LIB} PRIVATE -DHOMEKIT_DEBUG)
 endif()
-target_compile_options(${COMPONENT_LIB} PRIVATE ${homekit_COMPILE_OPTIONS})
